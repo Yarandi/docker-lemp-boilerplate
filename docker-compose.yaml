@@ -1,0 +1,53 @@
+version: '3'
+
+networks:
+  network:
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      #Our local /src folder is bound to the container’s /var/www path
+      - ./src:/var/www
+      #The /nginx/default.conf file we created is linked to the /etc/nginx/conf.d/default.conf container file,
+      #and will give us the ability to modify the nginx web server on our local machine.
+      - ./build/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - network
+
+  mysql:
+    image: mysql:5.7.22
+    container_name: mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: yarandi_db
+      MYSQL_USER: homestead
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./volumes/shared/mysql:/var/lib/mysql
+    networks:
+      - network
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php
+    volumes:
+      - ./src:/var/www
+    ports:
+      - "9000:9000"
+    networks:
+      - network
