@@ -3,7 +3,7 @@ The beauty of Docker for local PHP Project development ,Set up and configured a 
 
 after pulling codes ,the first thing we need to do is run the build command to generate the image data:
 
-`docker-compose build`
+``docker-compose build``
 
 You can then proceed with actually starting up the containers using:
 
